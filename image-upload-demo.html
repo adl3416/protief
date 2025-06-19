@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProTief Website - Image Upload Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .demo-section {
+            background: #f5f5f5;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        .steps {
+            counter-reset: step-counter;
+        }
+        .step {
+            counter-increment: step-counter;
+            margin: 15px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+        .step::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: #007bff;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .code {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎉 ProTief Website - Image Upload System Erfolgreich Implementiert!</h1>
+    
+    <div class="demo-section success">
+        <h2>✅ Was wurde implementiert:</h2>
+        <ul>
+            <li><strong>ImageUploader Component</strong> - Drag & Drop Interface mit Vorschau</li>
+            <li><strong>Admin Panel</strong> - Vollständige Verwaltungsoberfläche</li>
+            <li><strong>Content Management System</strong> - Dynamische Inhalte mit LocalStorage</li>
+            <li><strong>TypeScript Support</strong> - Vollständig typisiert</li>
+            <li><strong>React Integration</strong> - Nahtlose Integration in die bestehende Website</li>
+        </ul>
+    </div>
+
+    <div class="demo-section info">
+        <h2>🚀 So testen Sie das System:</h2>
+        <div class="steps">
+            <div class="step">
+                <strong>Website öffnen:</strong><br>
+                Gehen Sie zu <a href="http://localhost:5174" target="_blank">http://localhost:5174</a>
+            </div>
+            <div class="step">
+                <strong>Admin Panel öffnen:</strong><br>
+                Navigieren Sie zu <a href="http://localhost:5174/admin" target="_blank">http://localhost:5174/admin</a>
+            </div>
+            <div class="step">
+                <strong>Bilder hochladen:</strong><br>
+                - Hero Slider: Neue Slides hinzufügen und Bilder ersetzen<br>
+                - Über uns: Hauptbild ersetzen<br>
+                - Projekte: Projektbilder verwalten<br>
+                - Partner: Logos hochladen
+            </div>
+            <div class="step">
+                <strong>Änderungen speichern:</strong><br>
+                Klicken Sie auf "Speichern" um die Änderungen zu übernehmen
+            </div>
+            <div class="step">
+                <strong>Ergebnis prüfen:</strong><br>
+                Gehen Sie zurück zur <a href="http://localhost:5174" target="_blank">Hauptseite</a> und sehen Sie die Änderungen
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>🔧 Technische Details:</h2>
+        <h3>Dateien erstellt/geändert:</h3>
+        <ul>
+            <li><code>src/admin/ImageUploader.tsx</code> - Upload-Komponente</li>
+            <li><code>src/admin/AdminPanel.tsx</code> - Admin-Interface</li>
+            <li><code>src/admin/contentManager.ts</code> - Content-Management</li>
+            <li><code>src/types/index.ts</code> - TypeScript-Definitionen</li>
+            <li><code>src/components/Hero.tsx</code> - Dynamischer Hero-Slider</li>
+            <li><code>src/App.tsx</code> - Admin-Route hinzugefügt</li>
+        </ul>
+
+        <h3>Features des ImageUploaders:</h3>
+        <ul>
+            <li>✅ Drag & Drop Interface</li>
+            <li>✅ Bildvorschau</li>
+            <li>✅ Datei-Validierung (Typ und Größe)</li>
+            <li>✅ Upload-Progress Anzeige</li>
+            <li>✅ Fehlerbehandlung</li>
+            <li>✅ Responsive Design</li>
+        </ul>
+
+        <h3>Unterstützte Bildformate:</h3>
+        <div class="code">
+            JPG, PNG, WebP (max. 5MB)
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>📱 Admin Panel Features:</h2>
+        <ul>
+            <li><strong>Hero Slider:</strong> Slides hinzufügen/entfernen, Bilder und Texte bearbeiten</li>
+            <li><strong>Über uns:</strong> Hauptbild der Über-uns-Seite ändern</li>
+            <li><strong>Projekte:</strong> Projektbilder verwalten, neue Projekte hinzufügen</li>
+            <li><strong>Partner:</strong> Partner-Logos hochladen und verwalten</li>
+        </ul>
+    </div>
+
+    <div class="demo-section">
+        <h2>🎯 Nächste Schritte (optional):</h2>
+        <ol>
+            <li><strong>Backend Integration:</strong> File-Upload zu einem echten Server implementieren</li>
+            <li><strong>Benutzer-Authentifizierung:</strong> Login-System für das Admin Panel</li>
+            <li><strong>Datenbank:</strong> Inhalte in einer Datenbank statt LocalStorage speichern</li>
+            <li><strong>CDN Integration:</strong> Bilder über ein Content Delivery Network bereitstellen</li>
+            <li><strong>Bildoptimierung:</strong> Automatische Komprimierung und Größenanpassung</li>
+        </ol>
+    </div>
+
+    <div class="demo-section success">
+        <h2>🎊 Demo bereit!</h2>
+        <p>Das Image Upload System ist vollständig funktionsfähig. Sie können jetzt:</p>
+        <ul>
+            <li>Bilder per Drag & Drop hochladen</li>
+            <li>Inhalte über das Admin Panel verwalten</li>
+            <li>Änderungen in Echtzeit auf der Website sehen</li>
+        </ul>
+        <p><strong>Viel Spaß beim Testen! 🚀</strong></p>
+    </div>
+</body>
+</html>

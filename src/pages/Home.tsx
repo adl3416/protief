@@ -5,11 +5,33 @@ import {
   ClipboardDocumentListIcon, 
   BuildingOffice2Icon, 
   UserGroupIcon, 
-  CogIcon 
+  CogIcon,
+  ArrowRightIcon,
+  PhoneIcon 
 } from '@heroicons/react/24/outline'
 import { Link } from 'react-router-dom'
+import { loadContent } from '../admin/contentManager'
+import type { Partner } from '../types'
 
 const Home: React.FC = () => {
+  const [partners, setPartners] = React.useState<Partner[]>([])
+
+  React.useEffect(() => {
+    const content = loadContent()
+    setPartners(content.partners)
+  }, [])
+
+  // Debug: Content güncellendikten sonra sayfa yenilenir
+  React.useEffect(() => {
+    const handleStorageChange = () => {
+      const content = loadContent()
+      setPartners(content.partners)
+    }
+
+    window.addEventListener('storage', handleStorageChange)
+    return () => window.removeEventListener('storage', handleStorageChange)
+  }, [])
+
   const services = [
     {
       icon: ClipboardDocumentListIcon,
@@ -43,17 +65,60 @@ const Home: React.FC = () => {
     }
   ]
 
-  const partners = [
-    { name: 'Deutsche Glasfaser', logo: '/api/placeholder/150/60' },
-    { name: 'BEW', logo: '/api/placeholder/150/60' },
-    { name: 'Telekom', logo: '/api/placeholder/150/60' },
-    { name: 'Vodafone', logo: '/api/placeholder/150/60' }
-  ]
-
-  return (
-    <div>
+  return (    <div>
       {/* Hero Section */}
       <Hero />
+
+      {/* Warum ProTief Section */}
+      <section className="py-20 bg-blue-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Warum ProTief Baumanagement?
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Glasfaser-Infrastruktur aus einer Hand – 
+              Vertrauen Sie auf unsere Expertise in Düsseldorf und Umgebung.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-600 mb-6">
+                <ClipboardDocumentListIcon className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                Komplettlösung
+              </h3>
+              <p className="text-gray-600">
+                Planung, Tiefbau, Installation und Wartung – alles aus einer Quelle für maximale Effizienz.
+              </p>
+            </div>
+
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-600 mb-6">
+                <UserGroupIcon className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                Lokale Expertise
+              </h3>
+              <p className="text-gray-600">
+                Spezialist für Düsseldorf und Umgebung mit jahrelanger Erfahrung in der Region.
+              </p>
+            </div>            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-purple-600 mb-6">
+                <WrenchScrewdriverIcon className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                Modernste Technik
+              </h3>
+              <p className="text-gray-600">
+                Neueste Glasfaser-Technologie und moderne Verlegeverfahren für optimale Ergebnisse.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Services Section */}
       <section className="py-20 bg-gray-50">
@@ -158,57 +223,54 @@ const Home: React.FC = () => {
             </div>
           </div>
         </div>
-      </section>
-
-      {/* Partners Section */}
-      <section className="py-16 bg-gray-50">
+      </section>      {/* Partners Section */}
+      <section className="py-16 bg-white border-t border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-secondary-900 mb-4">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
               Unsere Partner
             </h2>
-            <p className="text-lg text-secondary-600">
-              Vertrauen Sie auf bewährte Partnerschaften
+            <p className="text-lg text-gray-600">
+              Vertrauen Sie auf bewährte Partnerschaften in der Glasfaser-Branche
             </p>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center">
+          </div>          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 items-center">
             {partners.map((partner, index) => (
-              <div key={index} className="text-center">
-                <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+              <div key={index} className="text-center group">
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group-hover:border-blue-200">
                   <img
                     src={partner.logo}
-                    alt={partner.name}
-                    className="h-12 mx-auto grayscale hover:grayscale-0 transition-all duration-300"
+                    alt={`${partner.name} Logo`}
+                    className="h-14 w-auto mx-auto grayscale group-hover:grayscale-0 transition-all duration-300 object-contain"
                   />
                 </div>
               </div>
             ))}
           </div>
         </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-primary-600">
+      </section>      {/* CTA Section */}
+      <section className="py-20 bg-blue-600">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl font-bold text-white mb-6">
             Bereit für Ihr Glasfaser-Projekt?
           </h2>
-          <p className="text-xl text-primary-100 mb-8">
-            Lassen Sie uns gemeinsam die digitale Infrastruktur der Zukunft aufbauen.
+          <p className="text-xl text-blue-100 mb-8">
+            Planung, Tiefbau, Installation und Wartung – 
+            lassen Sie uns gemeinsam die digitale Infrastruktur der Zukunft aufbauen.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              to="/kontakt"
-              className="inline-flex items-center px-8 py-4 bg-white text-primary-600 font-semibold rounded-lg hover:bg-gray-50 transition-colors duration-200"
+              to="/leistungen"
+              className="inline-flex items-center px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg hover:bg-gray-50 transition-colors duration-200"
             >
-              Kostenloses Beratungsgespräch
+              Unsere Leistungen
+              <ArrowRightIcon className="ml-2 h-5 w-5" />
             </Link>
             <Link
-              to="/projekte"
-              className="inline-flex items-center px-8 py-4 bg-transparent border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-primary-600 transition-all duration-200"
+              to="/kontakt"
+              className="inline-flex items-center px-8 py-4 bg-transparent border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-blue-600 transition-all duration-200"
             >
-              Referenzprojekte ansehen
+              Kontakt aufnehmen
+              <PhoneIcon className="ml-2 h-5 w-5" />
             </Link>
           </div>
         </div>

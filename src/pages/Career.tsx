@@ -1,47 +1,51 @@
 import React from 'react'
+import { loadContent } from '../admin/contentManager'
+import type { Job } from '../types'
 
 const Career: React.FC = () => {
-  const jobOpenings = [
-    {
-      title: 'Bauleiter Glasfaser (m/w/d)',
-      location: 'Düsseldorf',
-      type: 'Vollzeit',
-      experience: '3+ Jahre',
-      description: 'Leitung von Glasfaser-Bauprojekten von der Planung bis zur Abnahme.',
-      requirements: [
-        'Abgeschlossenes Studium im Bauingenieurwesen',
-        'Erfahrung im Tiefbau oder Telekommunikation',
-        'Führungsqualitäten und Teamfähigkeit',
-        'Führerschein Klasse B'
-      ]
-    },
-    {
-      title: 'Glasfaser-Techniker (m/w/d)',
-      location: 'Köln',
-      type: 'Vollzeit',
-      experience: '2+ Jahre',
-      description: 'Installation und Wartung von Glasfaser-Infrastruktur.',
-      requirements: [
-        'Ausbildung als Elektroniker oder vergleichbar',
-        'Kenntnisse in der Glasfasertechnik',
-        'Handwerkliches Geschick',
-        'Reisebereitschaft'
-      ]
-    },
-    {
-      title: 'Projektingenieur Planung (m/w/d)',
-      location: 'Düsseldorf',
-      type: 'Vollzeit',
-      experience: '1+ Jahre',
-      description: 'Technische Planung von Glasfaser-Netzwerken und Trassen.',
-      requirements: [
-        'Studium der Elektrotechnik oder Telekommunikation',
-        'CAD-Kenntnisse',
-        'Analytisches Denkvermögen',
-        'Teamorientierte Arbeitsweise'
-      ]
+  const [jobs, setJobs] = React.useState<Job[]>([])
+  const [filteredJobs, setFilteredJobs] = React.useState<Job[]>([])
+  const [selectedDepartment, setSelectedDepartment] = React.useState<string>('all')
+
+  React.useEffect(() => {
+    const loadJobs = () => {
+      const content = loadContent()
+      const activeJobs = content.jobs.filter(job => job.isActive)
+      setJobs(activeJobs)
+      setFilteredJobs(activeJobs)
     }
-  ]
+    
+    loadJobs()
+
+    // Listen for content updates from admin panel
+    const handleContentUpdate = () => {
+      loadJobs()
+    }
+    
+    window.addEventListener('protief-content-updated', handleContentUpdate)
+
+    return () => {
+      window.removeEventListener('protief-content-updated', handleContentUpdate)
+    }
+  }, [])
+
+  // Filter jobs by department
+  React.useEffect(() => {
+    if (selectedDepartment === 'all') {
+      setFilteredJobs(jobs)
+    } else {
+      setFilteredJobs(jobs.filter(job => job.department === selectedDepartment))
+    }
+  }, [jobs, selectedDepartment])
+
+  // Get unique departments
+  const departments = ['all', ...Array.from(new Set(jobs.map(job => job.department)))]
+
+  const handleApply = (jobTitle: string) => {
+    const subject = `Bewerbung: ${jobTitle}`
+    const body = `Sehr geehrte Damen und Herren,\n\nhiermit bewerbe ich mich auf die ausgeschriebene Stelle "${jobTitle}".\n\nIm Anhang finden Sie meine vollständigen Bewerbungsunterlagen.\n\nMit freundlichen Grüßen`
+    window.location.href = `mailto:karriere@protief-bau.de?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+  }
 
   const benefits = [
     {
@@ -121,62 +125,118 @@ const Career: React.FC = () => {
 
       {/* Job Openings */}
       <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">          <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-secondary-900 mb-4">
               Aktuelle Stellenausschreibungen
             </h2>
-            <p className="text-lg text-secondary-600">
+            <p className="text-lg text-secondary-600 mb-8">
               Finden Sie Ihre neue Herausforderung in unserem Team
             </p>
+            
+            {/* Department Filter */}
+            <div className="flex flex-wrap justify-center gap-2 mb-8">
+              {departments.map((dept) => (
+                <button
+                  key={dept}
+                  onClick={() => setSelectedDepartment(dept)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                    selectedDepartment === dept
+                      ? 'bg-primary-600 text-white'
+                      : 'bg-white text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  {dept === 'all' ? 'Alle Bereiche' : dept}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="space-y-6">
-            {jobOpenings.map((job, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-lg p-8 hover:shadow-xl transition-shadow">
-                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between mb-6">
-                  <div className="flex-1">
-                    <h3 className="text-2xl font-bold text-secondary-900 mb-2">
-                      {job.title}
-                    </h3>
-                    <div className="flex flex-wrap gap-4 text-sm text-secondary-600 mb-4">
-                      <span className="flex items-center">
-                        📍 {job.location}
-                      </span>
-                      <span className="flex items-center">
-                        💼 {job.type}
-                      </span>
-                      <span className="flex items-center">
-                        🎯 {job.experience}
-                      </span>
+            {filteredJobs.length > 0 ? (
+              filteredJobs.map((job) => (
+                <div key={job.id} className="bg-white rounded-lg shadow-lg p-8 hover:shadow-xl transition-shadow">
+                  <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between mb-6">
+                    <div className="flex-1">
+                      <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                        {job.title}
+                      </h3>
+                      <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-4">
+                        <span className="flex items-center">
+                          📍 {job.location}
+                        </span>
+                        <span className="flex items-center">
+                          💼 {job.type}
+                        </span>
+                        <span className="flex items-center">
+                          � {job.department}
+                        </span>
+                        {job.salary && (
+                          <span className="flex items-center text-green-600 font-semibold">
+                            💰 {job.salary}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-gray-700 mb-6">
+                        {job.description}
+                      </p>
                     </div>
-                    <p className="text-secondary-700 mb-6">
-                      {job.description}
-                    </p>
+                      <div className="lg:ml-8 flex-shrink-0">
+                      <button 
+                        onClick={() => handleApply(job.title)}
+                        className="w-full lg:w-auto bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                      >
+                        Jetzt bewerben
+                      </button>
+                    </div>
                   </div>
-                  
-                  <div className="lg:ml-8 flex-shrink-0">
-                    <button className="w-full lg:w-auto bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors">
-                      Jetzt bewerben
-                    </button>
-                  </div>
-                </div>
 
-                <div>
-                  <h4 className="font-semibold text-secondary-900 mb-3">
-                    Anforderungen:
-                  </h4>
-                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    {job.requirements.map((req, reqIndex) => (
-                      <li key={reqIndex} className="flex items-start">
-                        <span className="text-green-500 mr-2 mt-1">✓</span>
-                        <span className="text-secondary-600">{req}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-3">
+                        Anforderungen:
+                      </h4>
+                      <ul className="space-y-2">
+                        {job.requirements.map((req, reqIndex) => (
+                          <li key={reqIndex} className="flex items-start">
+                            <span className="text-green-500 mr-2 mt-1">✓</span>
+                            <span className="text-gray-600">{req}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-3">
+                        Wir bieten:
+                      </h4>
+                      <ul className="space-y-2">
+                        {job.benefits.map((benefit, benefitIndex) => (
+                          <li key={benefitIndex} className="flex items-start">
+                            <span className="text-blue-500 mr-2 mt-1">★</span>
+                            <span className="text-gray-600">{benefit}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
                 </div>
+              ))            ) : (
+              <div className="text-center py-12">
+                <div className="text-gray-400 text-6xl mb-4">💼</div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  {selectedDepartment === 'all' 
+                    ? 'Derzeit keine offenen Stellen' 
+                    : `Keine offenen Stellen im Bereich ${selectedDepartment}`
+                  }
+                </h3>
+                <p className="text-gray-600">
+                  {selectedDepartment === 'all' 
+                    ? 'Schauen Sie bald wieder vorbei oder senden Sie uns eine Initiativbewerbung.'
+                    : 'Versuchen Sie es mit einem anderen Bereich oder senden Sie uns eine Initiativbewerbung.'
+                  }
+                </p>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </section>

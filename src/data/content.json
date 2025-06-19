@@ -1,0 +1,97 @@
+{
+  "hero": {
+    "slides": [
+      {
+        "id": 1,
+        "title": "Glasfaser-Infrastruktur aus einer Hand",
+        "subtitle": "Planung, Tiefbau, Installation und Wartung – alles aus einer Quelle.",
+        "image": "/uploads/hero-1.jpg",
+        "alt": "Glasfaser Installation"
+      },
+      {
+        "id": 2,
+        "title": "Moderne Telekommunikation für Deutschland",
+        "subtitle": "Zuverlässige Glasfasernetze für die digitale Zukunft.",
+        "image": "/uploads/hero-2.jpg",
+        "alt": "Telekommunikation Infrastruktur"
+      },      {
+        "id": 3,
+        "title": "Professioneller Tiefbau",
+        "subtitle": "Erfahrene Experten für komplexe Infrastrukturprojekte.",
+        "image": "/uploads/hero-3.jpg",
+        "alt": "Tiefbau Arbeiten"
+      },
+      {
+        "id": 4,
+        "title": "Digitale Zukunft gestalten",
+        "subtitle": "Innovative Lösungen für nachhaltige Netzinfrastruktur.",
+        "image": "/uploads/hero-4.jpg",
+        "alt": "Digitale Infrastruktur"
+      }
+    ]
+  },
+  "about": {
+    "image": "/uploads/about-us.jpg",
+    "alt": "Team bei der Arbeit"
+  },
+  "services": {
+    "mainImage": "/uploads/services-main.jpg"
+  },
+  "projects": [
+    {
+      "id": 1,
+      "title": "Glasfaser-Ausbau Düsseldorf Nord",
+      "location": "Düsseldorf, NRW",
+      "scope": "2.500 Hausanschlüsse",
+      "duration": "8 Monate",
+      "image": "/uploads/project-1.jpg",
+      "description": "Kompletter Glasfaser-Ausbau für einen Neubaubereich mit 2.500 Wohneinheiten.",
+      "technologies": ["FTTH", "GPON", "Tiefbau"],
+      "status": "Abgeschlossen"
+    },
+    {
+      "id": 2,
+      "title": "Gewerbegebiet Glasfaser-Backbone",
+      "location": "Köln, NRW",
+      "scope": "15 km Haupttrasse",
+      "duration": "6 Monate",
+      "image": "/uploads/project-2.jpg",
+      "description": "Aufbau einer Hochleistungs-Glasfaser-Infrastruktur für ein Industriegebiet.",
+      "technologies": ["FTTB", "Dark Fiber", "Microtrenching"],
+      "status": "In Bearbeitung"
+    },
+    {
+      "id": 3,
+      "title": "Landkreis Glasfaser-Initiative",
+      "location": "Münster, NRW",
+      "scope": "50 km Überlandtrasse",
+      "duration": "12 Monate",
+      "image": "/uploads/project-3.jpg",
+      "description": "Anbindung ländlicher Gemeinden an das Hochgeschwindigkeits-Glasfasernetz.",
+      "technologies": ["FTTC", "Aerial Installation", "Underground"],
+      "status": "Geplant"
+    }
+  ],
+  "partners": [
+    {
+      "id": 1,
+      "name": "Deutsche Glasfaser",
+      "logo": "/uploads/partner-1.png"
+    },
+    {
+      "id": 2,
+      "name": "BEW",
+      "logo": "/uploads/partner-2.png"
+    },
+    {
+      "id": 3,
+      "name": "Telekom",
+      "logo": "/uploads/partner-3.png"
+    },
+    {
+      "id": 4,
+      "name": "Vodafone",
+      "logo": "/uploads/partner-4.png"
+    }
+  ]
+}
