@@ -15,17 +15,27 @@ import type { Partner } from '../types'
 
 const Home: React.FC = () => {
   const [partners, setPartners] = React.useState<Partner[]>([])
-
   React.useEffect(() => {
-    const content = loadContent()
-    setPartners(content.partners)
+    const loadData = async () => {
+      try {
+        const content = await loadContent()
+        setPartners(content.partners)
+      } catch (error) {
+        console.error('Error loading content:', error)
+      }
+    }
+    loadData()
   }, [])
 
   // Debug: Content güncellendikten sonra sayfa yenilenir
   React.useEffect(() => {
-    const handleStorageChange = () => {
-      const content = loadContent()
-      setPartners(content.partners)
+    const handleStorageChange = async () => {
+      try {
+        const content = await loadContent()
+        setPartners(content.partners)
+      } catch (error) {
+        console.error('Error loading content:', error)
+      }
     }
 
     window.addEventListener('storage', handleStorageChange)

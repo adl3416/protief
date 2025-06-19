@@ -1,0 +1,57 @@
+name: Backup Website Data
+
+on:
+  schedule:
+    # Her gün saat 02:00'de çalış
+    - cron: '0 2 * * *'
+  workflow_dispatch: # Manuel çalıştırma
+
+jobs:
+  backup-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Create backup directory
+      run: mkdir -p backups
+      
+    - name: Generate backup info
+      run: |
+        echo "# ProTief Website Data Backup" > backups/README.md
+        echo "" >> backups/README.md
+        echo "Bu klasörde website verilerinin yedekleri bulunur." >> backups/README.md
+        echo "" >> backups/README.md
+        echo "## Admin Panelinden Veri Import Etme:" >> backups/README.md
+        echo "1. Admin paneline git (/admin)" >> backups/README.md
+        echo "2. 📥 Import butonuna tıkla" >> backups/README.md
+        echo "3. Bu klasördeki en son .json dosyasını seç" >> backups/README.md
+        echo "" >> backups/README.md
+        echo "Son backup: $(date)" >> backups/README.md
+        
+    - name: Create sample backup file
+      run: |
+        cat > backups/sample-backup.json << 'EOF'
+        {
+          "content": {
+            "heroSlides": [],
+            "aboutImage": "",
+            "projects": [],
+            "partners": [],
+            "jobs": []
+          },
+          "uploadedFiles": [],
+          "images": {},
+          "exportDate": "$(date -Iseconds)",
+          "version": "1.0"
+        }
+        EOF
+        
+    - name: Commit backup files
+      run: |
+        git config --global user.name 'GitHub Actions'
+        git config --global user.email 'actions@github.com'
+        git add backups/
+        git commit -m "🔄 Update backup files - $(date)" || echo "No changes to commit"
+        git push || echo "Nothing to push"

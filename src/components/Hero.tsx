@@ -9,7 +9,6 @@ const Hero: React.FC = () => {
   const [currentSlide, setCurrentSlide] = React.useState(0)
   const [imagesLoaded, setImagesLoaded] = React.useState<boolean[]>([])
   const [isInitialLoad, setIsInitialLoad] = React.useState(true)
-
   React.useEffect(() => {
     const loadSlides = async () => {
       try {
@@ -22,15 +21,38 @@ const Hero: React.FC = () => {
             setImagesLoaded(new Array(content.heroSlides.length).fill(false))
             return
           }
-        }
-
-        // If no localStorage, load from content.json
+        }        // If no localStorage, try to load from API
+        try {
+          const response = await fetch('http://localhost:3001/api/content')
+          if (response.ok) {
+            const contentData = await response.json()
+            // Transform content.json format to expected format
+            const heroSlides = contentData.hero.slides.map((slide: {id: number, title: string, subtitle: string, image: string, alt: string}) => ({
+              id: slide.id.toString(),
+              image: slide.image.startsWith('/uploads/') 
+                ? `https://images.unsplash.com/photo-${slide.id === 1 ? '1544197150-b99a580bb7a8' : slide.id === 2 ? '1486406146926-c627a92ad1ab' : slide.id === 3 ? '1449824913935-59a10b8d2000' : '1558618666-fcd25c85cd64'}?w=1920&h=800&fit=crop&q=60`
+                : slide.image,
+              title: slide.title,
+              subtitle: slide.subtitle,
+              buttonText: 'Unsere Leistungen',
+              buttonLink: '/leistungen'
+            }))
+            
+            setSlides(heroSlides)
+            setImagesLoaded(new Array(heroSlides.length).fill(false))
+            return
+          }
+        } catch (apiError) {
+          console.warn('API not available, trying direct file load:', apiError)
+        }        // If no API, load from content.json file directly
         const response = await fetch('/src/data/content.json')
         const contentData = await response.json()
-          // Transform content.json format to expected format
+        // Transform content.json format to expected format
         const heroSlides = contentData.hero.slides.map((slide: {id: number, title: string, subtitle: string, image: string, alt: string}) => ({
           id: slide.id.toString(),
-          image: slide.image,
+          image: slide.image.startsWith('/uploads/') 
+            ? `https://images.unsplash.com/photo-${slide.id === 1 ? '1544197150-b99a580bb7a8' : slide.id === 2 ? '1486406146926-c627a92ad1ab' : slide.id === 3 ? '1449824913935-59a10b8d2000' : '1558618666-fcd25c85cd64'}?w=1920&h=800&fit=crop&q=60`
+            : slide.image,
           title: slide.title,
           subtitle: slide.subtitle,
           buttonText: 'Unsere Leistungen',
@@ -69,16 +91,17 @@ const Hero: React.FC = () => {
           },
           {
             id: '4',
-            image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&h=800&fit=crop&q=60',
-            title: 'Digitale Zukunft gestalten',
+            image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&h=800&fit=crop&q=60',            title: 'Digitale Zukunft gestalten',
             subtitle: 'Innovative Lösungen für nachhaltige Netzinfrastruktur.',
             buttonText: 'Mehr erfahren',
             buttonLink: '/ueber-uns'
           }
         ]
-        setSlides(defaultSlides)
+          setSlides(defaultSlides)
         setImagesLoaded(new Array(defaultSlides.length).fill(false))
-      }    }
+        console.log('✅ Default slides loaded:', defaultSlides.length)
+      }
+    }
     
     loadSlides()
 

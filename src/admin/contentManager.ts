@@ -1,4 +1,5 @@
 import type { HeroSlide, Project, Partner, Job } from '../types';
+import { contentApi, checkApiHealth, type ContentData as ApiContentData } from '../services/api';
 
 // Types for content management
 export interface ContentData {
@@ -9,8 +10,95 @@ export interface ContentData {
   jobs: Job[];
 }
 
-// Utility to load content from localStorage or default
-export const loadContent = (): ContentData => {
+// Convert API data to admin format
+const convertApiToAdmin = (apiData: ApiContentData): ContentData => {
+  return {
+    heroSlides: apiData.hero.slides.map(slide => ({
+      id: slide.id.toString(),
+      image: slide.image,
+      title: slide.title,
+      subtitle: slide.subtitle,
+      buttonText: 'Mehr erfahren',
+      buttonLink: '/leistungen'
+    })),
+    aboutImage: apiData.about.image,
+    projects: apiData.projects.map(project => ({
+      id: project.id.toString(),
+      title: project.title,
+      description: project.description,
+      image: project.image,
+      category: project.technologies[0] || 'Allgemein',
+      year: new Date().getFullYear().toString(),
+      status: project.status
+    })),
+    partners: apiData.partners.map(partner => ({
+      id: partner.id.toString(),
+      name: partner.name,
+      logo: partner.logo
+    })),
+    jobs: [] // Jobs werden separat verwaltet
+  };
+};
+
+// Convert admin data to API format
+export const convertAdminToApi = (adminData: ContentData): ApiContentData => {
+  return {
+    hero: {
+      slides: adminData.heroSlides.map(slide => ({
+        id: parseInt(slide.id),
+        title: slide.title,
+        subtitle: slide.subtitle,
+        image: slide.image,
+        alt: slide.title
+      }))
+    },
+    about: {
+      image: adminData.aboutImage,
+      alt: 'Team bei der Arbeit'
+    },
+    services: {
+      mainImage: '/uploads/services-main.jpg'
+    },
+    projects: adminData.projects.map(project => ({
+      id: parseInt(project.id),
+      title: project.title,
+      location: 'Deutschland',
+      scope: 'Verschiedene Bereiche',
+      duration: '6 Monate',
+      image: project.image,
+      description: project.description,
+      technologies: [project.category],
+      status: project.status
+    })),
+    partners: adminData.partners.map(partner => ({
+      id: parseInt(partner.id),
+      name: partner.name,
+      logo: partner.logo
+    }))
+  };
+};
+
+// Utility to load content from API or localStorage fallback
+export const loadContent = async (): Promise<ContentData> => {
+  // Check if API server is running
+  const isApiAvailable = await checkApiHealth();
+  
+  if (isApiAvailable) {
+    try {
+      console.log('Loading content from API...');
+      const apiData = await contentApi.loadContent();
+      const adminData = convertApiToAdmin(apiData);
+      
+      // Also save to localStorage as backup
+      localStorage.setItem('protief-content', JSON.stringify(adminData));
+      
+      return adminData;
+    } catch (error) {
+      console.warn('Failed to load from API, falling back to localStorage:', error);
+    }
+  }
+  
+  // Fallback to localStorage
   const saved = localStorage.getItem('protief-content');
   if (saved) {
     try {
@@ -20,15 +108,8 @@ export const loadContent = (): ContentData => {
     }
   }
   
-  // Load from content.json if no localStorage data
-  try {
-    // In production, you would fetch this from your API
-    // For now, we'll return default content and let the component handle JSON loading
-    return getDefaultContent();
-  } catch (error) {
-    console.error('Error loading content:', error);
-    return getDefaultContent();
-  }
+  // Last resort: default content
+  return getDefaultContent();
 };
 
 // Default content function
@@ -286,15 +367,54 @@ const getDefaultContent = (): ContentData => {
   };
 };
 
-// Utility to save content to localStorage
-export const saveContent = (content: ContentData): void => {
+// Utility to save content to both API and localStorage
+export const saveContent = async (content: ContentData): Promise<void> => {
   try {
+    // Save to localStorage first (as backup)
     localStorage.setItem('protief-content', JSON.stringify(content));
     
-    // Dispatch custom event to notify components of content update
+    // Check if API server is running
+    const isApiAvailable = await checkApiHealth();
+    
+    if (isApiAvailable) {
+      try {
+        console.log('Saving content to API...');
+        const apiData = convertAdminToApi(content);
+        await contentApi.saveContent(apiData);
+        console.log('✅ Content saved to content.json successfully!');
+        
+        // Dispatch success event
+        window.dispatchEvent(new CustomEvent('protief-content-saved', {
+          detail: { success: true, method: 'api' }
+        }));
+      } catch (error) {
+        console.warn('Failed to save to API, content saved to localStorage only:', error);
+        
+        // Dispatch partial success event
+        window.dispatchEvent(new CustomEvent('protief-content-saved', {
+          detail: { success: true, method: 'localStorage', apiError: error }
+        }));
+      }
+    } else {
+      console.warn('API server not available, content saved to localStorage only');
+      
+      // Dispatch localStorage-only event
+      window.dispatchEvent(new CustomEvent('protief-content-saved', {
+        detail: { success: true, method: 'localStorage', apiError: 'Server not available' }
+      }));
+    }
+    
+    // Dispatch general update event for components
     window.dispatchEvent(new CustomEvent('protief-content-updated'));
   } catch (error) {
     console.error('Error saving content:', error);
+    
+    // Dispatch error event
+    window.dispatchEvent(new CustomEvent('protief-content-saved', {
+      detail: { success: false, error }
+    }));
+    
+    throw error;
   }
 };
 
@@ -546,5 +666,67 @@ export const cleanupUnusedImages = (): void => {
     localStorage.setItem('protief-uploaded-files', JSON.stringify(activeFiles));
   } catch (error) {
     console.error('Error cleaning up images:', error);
+  }
+};
+
+// Utility to export all data including images
+export const exportAllData = (): string => {
+  try {
+    const content = loadContent();
+    const uploadedFiles = JSON.parse(localStorage.getItem('protief-uploaded-files') || '[]');
+    
+    // Collect all images
+    const images: Record<string, string> = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('protief-image-')) {
+        images[key] = localStorage.getItem(key) || '';
+      }
+    }
+    
+    const exportData = {
+      content,
+      uploadedFiles,
+      images,
+      exportDate: new Date().toISOString(),
+      version: '1.0'
+    };
+    
+    return JSON.stringify(exportData, null, 2);
+  } catch (error) {
+    console.error('Error exporting data:', error);
+    throw new Error('Export fehlgeschlagen');
+  }
+};
+
+// Utility to import all data including images
+export const importAllData = (jsonData: string): void => {
+  try {
+    const importData = JSON.parse(jsonData);
+    
+    if (!importData.content || !importData.images) {
+      throw new Error('Invalid data format');
+    }
+    
+    // Import content
+    saveContent(importData.content);
+    
+    // Import images
+    Object.entries(importData.images).forEach(([key, value]) => {
+      if (typeof value === 'string') {
+        localStorage.setItem(key, value);
+      }
+    });
+    
+    // Import file metadata
+    if (importData.uploadedFiles) {
+      localStorage.setItem('protief-uploaded-files', JSON.stringify(importData.uploadedFiles));
+    }
+    
+    // Dispatch update event
+    window.dispatchEvent(new CustomEvent('protief-content-updated'));
+  } catch (error) {
+    console.error('Error importing data:', error);
+    throw new Error('Import fehlgeschlagen');
   }
 };

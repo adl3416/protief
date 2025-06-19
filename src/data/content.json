@@ -5,28 +5,29 @@
         "id": 1,
         "title": "Glasfaser-Infrastruktur aus einer Hand",
         "subtitle": "Planung, Tiefbau, Installation und Wartung – alles aus einer Quelle.",
-        "image": "/uploads/hero-1.jpg",
-        "alt": "Glasfaser Installation"
+        "image": "local://protief-image-hero-1-1750376684133.jpg",
+        "alt": "Glasfaser-Infrastruktur aus einer Hand"
       },
       {
         "id": 2,
         "title": "Moderne Telekommunikation für Deutschland",
         "subtitle": "Zuverlässige Glasfasernetze für die digitale Zukunft.",
-        "image": "/uploads/hero-2.jpg",
-        "alt": "Telekommunikation Infrastruktur"
-      },      {
+        "image": "local://protief-image-hero-2-1750376690064.jpg",
+        "alt": "Moderne Telekommunikation für Deutschland"
+      },
+      {
         "id": 3,
         "title": "Professioneller Tiefbau",
         "subtitle": "Erfahrene Experten für komplexe Infrastrukturprojekte.",
-        "image": "/uploads/hero-3.jpg",
-        "alt": "Tiefbau Arbeiten"
+        "image": "local://protief-image-hero-3-1750376694919.jpg",
+        "alt": "Professioneller Tiefbau"
       },
       {
         "id": 4,
         "title": "Digitale Zukunft gestalten",
         "subtitle": "Innovative Lösungen für nachhaltige Netzinfrastruktur.",
-        "image": "/uploads/hero-4.jpg",
-        "alt": "Digitale Infrastruktur"
+        "image": "local://protief-image-hero-4-1750376701178.jpg",
+        "alt": "Digitale Zukunft gestalten"
       }
     ]
   },
@@ -41,34 +42,40 @@
     {
       "id": 1,
       "title": "Glasfaser-Ausbau Düsseldorf Nord",
-      "location": "Düsseldorf, NRW",
-      "scope": "2.500 Hausanschlüsse",
-      "duration": "8 Monate",
+      "location": "Deutschland",
+      "scope": "Verschiedene Bereiche",
+      "duration": "6 Monate",
       "image": "/uploads/project-1.jpg",
       "description": "Kompletter Glasfaser-Ausbau für einen Neubaubereich mit 2.500 Wohneinheiten.",
-      "technologies": ["FTTH", "GPON", "Tiefbau"],
+      "technologies": [
+        "FTTH"
+      ],
       "status": "Abgeschlossen"
     },
     {
       "id": 2,
       "title": "Gewerbegebiet Glasfaser-Backbone",
-      "location": "Köln, NRW",
-      "scope": "15 km Haupttrasse",
+      "location": "Deutschland",
+      "scope": "Verschiedene Bereiche",
       "duration": "6 Monate",
       "image": "/uploads/project-2.jpg",
       "description": "Aufbau einer Hochleistungs-Glasfaser-Infrastruktur für ein Industriegebiet.",
-      "technologies": ["FTTB", "Dark Fiber", "Microtrenching"],
+      "technologies": [
+        "FTTB"
+      ],
       "status": "In Bearbeitung"
     },
     {
       "id": 3,
       "title": "Landkreis Glasfaser-Initiative",
-      "location": "Münster, NRW",
-      "scope": "50 km Überlandtrasse",
-      "duration": "12 Monate",
+      "location": "Deutschland",
+      "scope": "Verschiedene Bereiche",
+      "duration": "6 Monate",
       "image": "/uploads/project-3.jpg",
       "description": "Anbindung ländlicher Gemeinden an das Hochgeschwindigkeits-Glasfasernetz.",
-      "technologies": ["FTTC", "Aerial Installation", "Underground"],
+      "technologies": [
+        "FTTC"
+      ],
       "status": "Geplant"
     }
   ],

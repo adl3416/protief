@@ -6,13 +6,24 @@ const Career: React.FC = () => {
   const [jobs, setJobs] = React.useState<Job[]>([])
   const [filteredJobs, setFilteredJobs] = React.useState<Job[]>([])
   const [selectedDepartment, setSelectedDepartment] = React.useState<string>('all')
+  const [loading, setLoading] = React.useState(true)
 
   React.useEffect(() => {
-    const loadJobs = () => {
-      const content = loadContent()
-      const activeJobs = content.jobs.filter(job => job.isActive)
-      setJobs(activeJobs)
-      setFilteredJobs(activeJobs)
+    const loadJobs = async () => {
+      try {
+        setLoading(true)
+        const content = await loadContent()
+        const activeJobs = content.jobs.filter(job => job.isActive)
+        setJobs(activeJobs)
+        setFilteredJobs(activeJobs)
+      } catch (error) {
+        console.error('Error loading jobs:', error)
+        // Fallback to empty array - UI will show "no jobs" message
+        setJobs([])
+        setFilteredJobs([])
+      } finally {
+        setLoading(false)
+      }
     }
     
     loadJobs()
@@ -149,10 +160,13 @@ const Career: React.FC = () => {
                 </button>
               ))}
             </div>
-          </div>
-
-          <div className="space-y-6">
-            {filteredJobs.length > 0 ? (
+          </div>          <div className="space-y-6">
+            {loading ? (
+              <div className="text-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+                <p className="text-gray-600">Stellenausschreibungen werden geladen...</p>
+              </div>
+            ) : filteredJobs.length > 0 ? (
               filteredJobs.map((job) => (
                 <div key={job.id} className="bg-white rounded-lg shadow-lg p-8 hover:shadow-xl transition-shadow">
                   <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between mb-6">
