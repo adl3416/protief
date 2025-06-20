@@ -473,144 +473,144 @@ export const handleImageUpload = async (
 };
 
 // Utility to update hero slide image
-export const updateHeroSlideImage = (slideId: string, imageUrl: string): void => {
-  const content = loadContent();
+export const updateHeroSlideImage = async (slideId: string, imageUrl: string): Promise<void> => {
+  const content = await loadContent();
   const slideIndex = content.heroSlides.findIndex(slide => slide.id === slideId);
   
   if (slideIndex !== -1) {
     content.heroSlides[slideIndex].image = imageUrl;
-    saveContent(content);
+    await saveContent(content);
   }
 };
 
 // Utility to update about image
-export const updateAboutImage = (imageUrl: string): void => {
-  const content = loadContent();
+export const updateAboutImage = async (imageUrl: string): Promise<void> => {
+  const content = await loadContent();
   content.aboutImage = imageUrl;
-  saveContent(content);
+  await saveContent(content);
 };
 
 // Utility to update project image
-export const updateProjectImage = (projectId: string, imageUrl: string): void => {
-  const content = loadContent();
+export const updateProjectImage = async (projectId: string, imageUrl: string): Promise<void> => {
+  const content = await loadContent();
   const projectIndex = content.projects.findIndex(project => project.id === projectId);
   
   if (projectIndex !== -1) {
     content.projects[projectIndex].image = imageUrl;
-    saveContent(content);
+    await saveContent(content);
   }
 };
 
 // Utility to update partner logo
-export const updatePartnerLogo = (partnerId: string, logoUrl: string): void => {
-  const content = loadContent();
+export const updatePartnerLogo = async (partnerId: string, logoUrl: string): Promise<void> => {
+  const content = await loadContent();
   const partnerIndex = content.partners.findIndex(partner => partner.id === partnerId);
   
   if (partnerIndex !== -1) {
     content.partners[partnerIndex].logo = logoUrl;
-    saveContent(content);
+    await saveContent(content);
   }
 };
 
 // Utility to add new hero slide
-export const addHeroSlide = (slide: Omit<HeroSlide, 'id'>): void => {
-  const content = loadContent();
+export const addHeroSlide = async (slide: Omit<HeroSlide, 'id'>): Promise<void> => {
+  const content = await loadContent();
   const newSlide: HeroSlide = {
     ...slide,
     id: Date.now().toString()
   };
   content.heroSlides.push(newSlide);
-  saveContent(content);
+  await saveContent(content);
 };
 
 // Utility to remove hero slide
-export const removeHeroSlide = (slideId: string): void => {
-  const content = loadContent();
+export const removeHeroSlide = async (slideId: string): Promise<void> => {
+  const content = await loadContent();
   content.heroSlides = content.heroSlides.filter(slide => slide.id !== slideId);
-  saveContent(content);
+  await saveContent(content);
 };
 
 // Utility to add new project
-export const addProject = (project: Omit<Project, 'id'>): void => {
-  const content = loadContent();
+export const addProject = async (project: Omit<Project, 'id'>): Promise<void> => {
+  const content = await loadContent();
   const newProject: Project = {
     ...project,
     id: Date.now().toString()
   };
   content.projects.push(newProject);
-  saveContent(content);
+  await saveContent(content);
 };
 
 // Utility to remove project
-export const removeProject = (projectId: string): void => {
-  const content = loadContent();
+export const removeProject = async (projectId: string): Promise<void> => {
+  const content = await loadContent();
   content.projects = content.projects.filter(project => project.id !== projectId);
-  saveContent(content);
+  await saveContent(content);
 };
 
 // Utility to add new partner
-export const addPartner = (partner: Omit<Partner, 'id'>): void => {
-  const content = loadContent();
+export const addPartner = async (partner: Omit<Partner, 'id'>): Promise<void> => {
+  const content = await loadContent();
   const newPartner: Partner = {
     ...partner,
     id: Date.now().toString()
   };
   content.partners.push(newPartner);
-  saveContent(content);
+  await saveContent(content);
 };
 
 // Utility to remove partner
-export const removePartner = (partnerId: string): void => {
-  const content = loadContent();
+export const removePartner = async (partnerId: string): Promise<void> => {
+  const content = await loadContent();
   content.partners = content.partners.filter(partner => partner.id !== partnerId);
-  saveContent(content);
+  await saveContent(content);
 };
 
 // Job management utilities
-export const addJob = (job: Omit<Job, 'id' | 'createdAt'>): void => {
-  const content = loadContent();
+export const addJob = async (job: Omit<Job, 'id' | 'createdAt'>): Promise<void> => {
+  const content = await loadContent();
   const newJob: Job = {
     ...job,
     id: Date.now().toString(),
     createdAt: new Date().toISOString()
   };
   content.jobs.push(newJob);
-  saveContent(content);
+  await saveContent(content);
 };
 
-export const updateJob = (jobId: string, updatedJob: Partial<Job>): void => {
-  const content = loadContent();
+export const updateJob = async (jobId: string, updatedJob: Partial<Job>): Promise<void> => {
+  const content = await loadContent();
   const jobIndex = content.jobs.findIndex(job => job.id === jobId);
   
   if (jobIndex !== -1) {
     content.jobs[jobIndex] = { ...content.jobs[jobIndex], ...updatedJob };
-    saveContent(content);
+    await saveContent(content);
   }
 };
 
-export const removeJob = (jobId: string): void => {
-  const content = loadContent();
+export const removeJob = async (jobId: string): Promise<void> => {
+  const content = await loadContent();
   content.jobs = content.jobs.filter(job => job.id !== jobId);
-  saveContent(content);
+  await saveContent(content);
 };
 
-export const toggleJobStatus = (jobId: string): void => {
-  const content = loadContent();
+export const toggleJobStatus = async (jobId: string): Promise<void> => {
+  const content = await loadContent();
   const jobIndex = content.jobs.findIndex(job => job.id === jobId);
   
   if (jobIndex !== -1) {
     content.jobs[jobIndex].isActive = !content.jobs[jobIndex].isActive;
-    saveContent(content);
+    await saveContent(content);
   }
 };
 
-export const getActiveJobs = (): Job[] => {
-  const content = loadContent();
+export const getActiveJobs = async (): Promise<Job[]> => {
+  const content = await loadContent();
   return content.jobs.filter(job => job.isActive);
 };
 
-export const getJobById = (jobId: string): Job | undefined => {
-  const content = loadContent();
+export const getJobById = async (jobId: string): Promise<Job | undefined> => {
+  const content = await loadContent();
   return content.jobs.find(job => job.id === jobId);
 };
 
@@ -625,9 +625,9 @@ export const getImageUrl = (imageUrl: string): string => {
 };
 
 // Utility to clean up unused images from localStorage
-export const cleanupUnusedImages = (): void => {
+export const cleanupUnusedImages = async (): Promise<void> => {
   try {
-    const content = loadContent();
+    const content = await loadContent();
     const usedImageKeys = new Set<string>();
     
     // Collect all used image keys
@@ -670,9 +670,9 @@ export const cleanupUnusedImages = (): void => {
 };
 
 // Utility to export all data including images
-export const exportAllData = (): string => {
+export const exportAllData = async (): Promise<string> => {
   try {
-    const content = loadContent();
+    const content = await loadContent();
     const uploadedFiles = JSON.parse(localStorage.getItem('protief-uploaded-files') || '[]');
     
     // Collect all images
@@ -700,7 +700,7 @@ export const exportAllData = (): string => {
 };
 
 // Utility to import all data including images
-export const importAllData = (jsonData: string): void => {
+export const importAllData = async (jsonData: string): Promise<void> => {
   try {
     const importData = JSON.parse(jsonData);
     
@@ -709,7 +709,7 @@ export const importAllData = (jsonData: string): void => {
     }
     
     // Import content
-    saveContent(importData.content);
+    await saveContent(importData.content);
     
     // Import images
     Object.entries(importData.images).forEach(([key, value]) => {

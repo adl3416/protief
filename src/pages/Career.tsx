@@ -1,31 +1,58 @@
 import React from 'react'
-import { loadContent } from '../admin/contentManager'
 import type { Job } from '../types'
 
 const Career: React.FC = () => {
   const [jobs, setJobs] = React.useState<Job[]>([])
   const [filteredJobs, setFilteredJobs] = React.useState<Job[]>([])
   const [selectedDepartment, setSelectedDepartment] = React.useState<string>('all')
-  const [loading, setLoading] = React.useState(true)
+  const [isLoading, setIsLoading] = React.useState(true)
 
   React.useEffect(() => {
     const loadJobs = async () => {
       try {
-        setLoading(true)
-        const content = await loadContent()
-        const activeJobs = content.jobs.filter(job => job.isActive)
+        setIsLoading(true)
+        
+        // First try to load from localStorage (admin changes)
+        const saved = localStorage.getItem('protief-content')
+        if (saved) {
+          const content = JSON.parse(saved)
+          if (content.jobs && content.jobs.length > 0) {
+            const activeJobs = content.jobs.filter((job: Job) => job.isActive)
+            setJobs(activeJobs)
+            setFilteredJobs(activeJobs)
+            setIsLoading(false)
+            return
+          }
+        }
+
+        // If no localStorage, try to load from API
+        try {
+          const response = await fetch('http://localhost:3001/api/content')
+          if (response.ok) {
+            const contentData = await response.json()
+            const activeJobs = contentData.jobs.filter((job: Job) => job.isActive)
+            setJobs(activeJobs)
+            setFilteredJobs(activeJobs)
+            setIsLoading(false)
+            return
+          }
+        } catch (apiError) {
+          console.warn('API not available, trying direct file load:', apiError)
+        }
+
+        // If no API, load from content.json file directly
+        const response = await fetch('/src/data/content.json')
+        const contentData = await response.json()
+        const activeJobs = contentData.jobs.filter((job: Job) => job.isActive)
         setJobs(activeJobs)
         setFilteredJobs(activeJobs)
+        setIsLoading(false)
       } catch (error) {
         console.error('Error loading jobs:', error)
-        // Fallback to empty array - UI will show "no jobs" message
-        setJobs([])
-        setFilteredJobs([])
-      } finally {
-        setLoading(false)
+        setIsLoading(false)
+        // Keep empty jobs array as fallback
       }
-    }
-    
+    }    
     loadJobs()
 
     // Listen for content updates from admin panel
@@ -161,10 +188,11 @@ const Career: React.FC = () => {
               ))}
             </div>
           </div>          <div className="space-y-6">
-            {loading ? (
+            {isLoading ? (
               <div className="text-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-                <p className="text-gray-600">Stellenausschreibungen werden geladen...</p>
+                <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                <div className="text-xl font-semibold text-gray-900">Lade Stellenausschreibungen...</div>
+                <div className="text-gray-600 mt-2">Bitte einen Moment Geduld</div>
               </div>
             ) : filteredJobs.length > 0 ? (
               filteredJobs.map((job) => (
