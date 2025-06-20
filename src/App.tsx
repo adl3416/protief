@@ -7,6 +7,9 @@ import Services from './pages/Services'
 import Projects from './pages/Projects'
 import Career from './pages/Career'
 import Contact from './pages/Contact'
+import Impressum from './pages/Impressum'
+import Datenschutz from './pages/Datenschutz'
+import AGB from './pages/AGB'
 import AdminPanel from './admin/AdminPanel'
 
 function App() {
@@ -26,6 +29,9 @@ function App() {
                   <Route path="/projekte" element={<Projects />} />
                   <Route path="/karriere" element={<Career />} />
                   <Route path="/kontakt" element={<Contact />} />
+                  <Route path="/impressum" element={<Impressum />} />
+                  <Route path="/datenschutz" element={<Datenschutz />} />
+                  <Route path="/agb" element={<AGB />} />
                 </Routes>
               </main>
               <Footer />

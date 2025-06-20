@@ -23,15 +23,13 @@ const Hero: React.FC = () => {
           }
         }        // If no localStorage, try to load from API
         try {
-          const response = await fetch('http://localhost:3001/api/content')
+          const response = await fetch('/api/content')
           if (response.ok) {
             const contentData = await response.json()
             // Transform content.json format to expected format
             const heroSlides = contentData.hero.slides.map((slide: {id: number, title: string, subtitle: string, image: string, alt: string}) => ({
               id: slide.id.toString(),
-              image: slide.image.startsWith('/uploads/') 
-                ? `https://images.unsplash.com/photo-${slide.id === 1 ? '1544197150-b99a580bb7a8' : slide.id === 2 ? '1486406146926-c627a92ad1ab' : slide.id === 3 ? '1449824913935-59a10b8d2000' : '1558618666-fcd25c85cd64'}?w=1920&h=800&fit=crop&q=60`
-                : slide.image,
+              image: getImageUrl(slide.image),
               title: slide.title,
               subtitle: slide.subtitle,
               buttonText: 'Unsere Leistungen',
@@ -44,23 +42,26 @@ const Hero: React.FC = () => {
           }
         } catch (apiError) {
           console.warn('API not available, trying direct file load:', apiError)
-        }        // If no API, load from content.json file directly
-        const response = await fetch('/src/data/content.json')
-        const contentData = await response.json()
-        // Transform content.json format to expected format
-        const heroSlides = contentData.hero.slides.map((slide: {id: number, title: string, subtitle: string, image: string, alt: string}) => ({
-          id: slide.id.toString(),
-          image: slide.image.startsWith('/uploads/') 
-            ? `https://images.unsplash.com/photo-${slide.id === 1 ? '1544197150-b99a580bb7a8' : slide.id === 2 ? '1486406146926-c627a92ad1ab' : slide.id === 3 ? '1449824913935-59a10b8d2000' : '1558618666-fcd25c85cd64'}?w=1920&h=800&fit=crop&q=60`
-            : slide.image,
-          title: slide.title,
-          subtitle: slide.subtitle,
-          buttonText: 'Unsere Leistungen',
-          buttonLink: '/leistungen'
-        }))
-        
-        setSlides(heroSlides)
-        setImagesLoaded(new Array(heroSlides.length).fill(false))
+        }        // If no API, load from content.json file directly (for production deployment)
+        try {
+          const response = await fetch('/content.json')
+          const contentData = await response.json()
+          // Transform content.json format to expected format
+          const heroSlides = contentData.hero.slides.map((slide: {id: number, title: string, subtitle: string, image: string, alt: string}) => ({
+            id: slide.id.toString(),
+            image: getImageUrl(slide.image),
+            title: slide.title,
+            subtitle: slide.subtitle,
+            buttonText: 'Unsere Leistungen',
+            buttonLink: '/leistungen'
+          }))
+          
+          setSlides(heroSlides)
+          setImagesLoaded(new Array(heroSlides.length).fill(false))
+          return
+        } catch (fileError) {
+          console.warn('Content file not available, using fallback slides:', fileError)
+        }
       } catch (error) {
         console.error('Error loading slides:', error)
         // Fallback to default slides

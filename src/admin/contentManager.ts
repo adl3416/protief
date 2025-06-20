@@ -430,7 +430,27 @@ export const handleImageUpload = async (
   const fileName = `${type}-${itemId || 'main'}-${timestamp}.${extension}`;
 
   try {
-    // Convert file to base64 for permanent storage
+    // First, try to upload to the API server
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('fileName', fileName);
+
+    try {
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('✅ Image uploaded to server:', result.path);
+        return result.path; // Return server path like "/uploads/hero-1-123456.jpg"
+      }
+    } catch (serverError) {
+      console.warn('Server upload failed, falling back to localStorage:', serverError);
+    }
+
+    // Fallback: Convert file to base64 for localStorage
     const base64Data = await new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => {
@@ -619,8 +639,36 @@ export const getImageUrl = (imageUrl: string): string => {
   if (imageUrl.startsWith('local://')) {
     const imageKey = imageUrl.replace('local://', '');
     const base64Data = localStorage.getItem(imageKey);
-    return base64Data || imageUrl; // Return base64 data or fallback to original URL
+    
+    if (base64Data) {
+      return base64Data; // Return base64 data if available
+    }
+    
+    // Fallback to Unsplash images for hero slides when local images are not available
+    if (imageKey.includes('hero-1')) {
+      return 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=1920&h=800&fit=crop&q=60';
+    } else if (imageKey.includes('hero-2')) {
+      return 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1920&h=800&fit=crop&q=60';
+    } else if (imageKey.includes('hero-3')) {
+      return 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=1920&h=800&fit=crop&q=60';
+    } else if (imageKey.includes('hero-4')) {
+      return 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&h=800&fit=crop&q=60';
+    }
+    
+    // Generic fallback for other images
+    return 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1920&h=800&fit=crop&q=60';
   }
+  
+  // Handle /uploads/ paths - these should work directly in both dev and production
+  if (imageUrl.startsWith('/uploads/')) {
+    // In development, try to load from server first
+    if (window.location.hostname === 'localhost') {
+      return `http://localhost:3001${imageUrl}`;
+    }
+    // In production, use relative path
+    return imageUrl;
+  }
+  
   return imageUrl; // Return external URLs as-is
 };
 

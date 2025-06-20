@@ -166,9 +166,10 @@ const AdminPanel: React.FC = () => {
       }));
     }
   };
-
   const handleHeroImageUpload = async (slideId: string, file: File) => {
     try {
+      setSaveStatus({ show: true, success: false, message: 'Bild wird hochgeladen...', method: 'upload' });
+      
       const newImageUrl = await handleImageUpload(file, 'hero', slideId);
       setContent(prev => ({
         ...prev,
@@ -176,9 +177,13 @@ const AdminPanel: React.FC = () => {
           slide.id === slideId ? { ...slide, image: newImageUrl } : slide
         )
       }));
+      
+      setSaveStatus({ show: true, success: true, message: 'Bild erfolgreich hochgeladen!', method: 'upload' });
+      setTimeout(() => setSaveStatus({ show: false, success: false, message: '' }), 3000);
     } catch (error) {
       console.error('Fehler beim Hochladen des Bildes:', error);
-      alert('Fehler beim Hochladen des Bildes');
+      setSaveStatus({ show: true, success: false, message: 'Fehler beim Hochladen des Bildes', method: 'upload' });
+      setTimeout(() => setSaveStatus({ show: false, success: false, message: '' }), 5000);
     }
   };
 
@@ -190,18 +195,23 @@ const AdminPanel: React.FC = () => {
       )
     }));
   };
-
   // About image functions
   const handleAboutImageUpload = async (file: File) => {
     try {
+      setSaveStatus({ show: true, success: false, message: 'Bild wird hochgeladen...', method: 'upload' });
+      
       const newImageUrl = await handleImageUpload(file, 'about');
       setContent(prev => ({
         ...prev,
         aboutImage: newImageUrl
       }));
+      
+      setSaveStatus({ show: true, success: true, message: 'Bild erfolgreich hochgeladen!', method: 'upload' });
+      setTimeout(() => setSaveStatus({ show: false, success: false, message: '' }), 3000);
     } catch (error) {
       console.error('Fehler beim Hochladen des Bildes:', error);
-      alert('Fehler beim Hochladen des Bildes');
+      setSaveStatus({ show: true, success: false, message: 'Fehler beim Hochladen des Bildes', method: 'upload' });
+      setTimeout(() => setSaveStatus({ show: false, success: false, message: '' }), 5000);
     }
   };
 

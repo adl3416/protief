@@ -2,13 +2,50 @@ const express = require('express');
 const fs = require('fs').promises;
 const path = require('path');
 const cors = require('cors');
+const multer = require('multer');
 
 const app = express();
 const PORT = 3001;
 
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: async (req, file, cb) => {
+    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+    try {
+      await fs.access(uploadsDir);
+    } catch {
+      await fs.mkdir(uploadsDir, { recursive: true });
+    }
+    cb(null, uploadsDir);
+  },
+  filename: (req, file, cb) => {
+    // Use the filename from the request or generate one
+    const fileName = req.body.fileName || `${Date.now()}-${file.originalname}`;
+    cb(null, fileName);
+  }
+});
+
+const upload = multer({ 
+  storage: storage,
+  limits: {
+    fileSize: 10 * 1024 * 1024 // 10MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    // Check if file is an image
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed!'), false);
+    }
+  }
+});
+
 // Middleware
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
+
+// Serve uploaded files statically
+app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads')));
 
 // Path to content.json file
 const CONTENT_FILE_PATH = path.join(process.cwd(), 'src', 'data', 'content.json');
@@ -49,8 +86,31 @@ app.post('/api/content', async (req, res) => {
   }
 });
 
-// POST: Save images to public/uploads directory
-app.post('/api/upload', async (req, res) => {
+// POST: Upload image files
+app.post('/api/upload', upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No image file provided' });
+    }
+
+    const fileName = req.file.filename;
+    const filePath = `/uploads/${fileName}`;
+    
+    console.log('✅ Image uploaded successfully:', fileName);
+    res.json({ 
+      success: true, 
+      path: filePath,
+      fileName: fileName,
+      message: 'Image uploaded successfully' 
+    });
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    res.status(500).json({ error: 'Failed to upload image' });
+  }
+});
+
+// POST: Save images to public/uploads directory (legacy base64 endpoint)
+app.post('/api/upload-base64', async (req, res) => {
   try {
     const { filename, data } = req.body;
     
